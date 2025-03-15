@@ -6,14 +6,17 @@ use Illuminate\Http\Request;
 
 class Cart extends Controller
 {
+    /**
+     * Add an item to the cart.
+     */
     public function addToCart(Request $request)
     {
         $cart = session()->get('cart', []);
 
-        $id = $request->id;
-        $name = $request->name;
-        $price = $request->price;
-        $image = $request->image;
+        $id     = $request->id;
+        $name   = $request->name;
+        $price  = $request->price;
+        $image  = $request->image;
 
         if (isset($cart[$id])) {
             $cart[$id]['quantity']++;
@@ -26,6 +29,9 @@ class Cart extends Controller
         return response()->json(['cart' => $cart]);
     }
 
+    /**
+     * Remove an item from the cart.
+     */
     public function removeFromCart(Request $request)
     {
         $cart = session()->get('cart', []);
@@ -40,6 +46,9 @@ class Cart extends Controller
         return response()->json(['cart' => $cart]);
     }
 
+    /**
+     * Display the cart.
+     */
     public function showCart()
     {
         $cart = session()->get('cart', []);

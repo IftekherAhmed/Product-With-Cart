@@ -1,74 +1,86 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+{{-- row --}}
+<div class="row">
+    {{-- Product Column --}}
+    <div class="col-md-8">
+        <h2 class="mb-4">Product Catalog</h2>
+        {{-- Search input --}}
+        <input type="text" id="search" class="form-control mb-3" placeholder="Search products...">
+        {{--/ Search input --}}
 
-    {{-- row --}}
-    <div class="row">
-        <div class="col-md-8">
-            <h2 class="mb-4">Product Catalog</h2>
-            {{-- Search input --}}
-            <input type="text" id="search" class="form-control mb-3" placeholder="Search products...">
+        {{-- Row --}}
+        <div class="row">
+            {{-- Loop through products --}}
+            @foreach($products as $product)
+            <div class="col-md-4 mb-4">
+                {{-- Product card --}}
+                <div class="card">
+                    <div class="card-body">
+                        {{-- Product name --}}
+                        <b class="product-title">{{ $product['name'] }}</b>
+                        {{--/ Product Name --}}
+                        
+                        {{-- Product price --}}
+                        <p class="text-danger">
+                            <strong>${{ number_format($product['price'], 2) }}</strong>
+                        </p>
+                        {{--/ Product price --}}
 
-            <div class="row">
-                {{-- Loop through products --}}
-                @foreach($products as $product)
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            {{-- Product name --}}
-                            <b>{{ $product['name'] }}</b>
-                            {{-- Product price --}}
-                            <p class="text-danger">
-                                <strong>${{ number_format($product['price'], 2) }}</strong>
-                            </p>
-                            {{-- Add to cart button --}}
-                            <a class="add-to-cart text-decoration-none text-dark" href="#"
-                                data-id="{{ $product['id'] }}" 
-                                data-name="{{ $product['name'] }}" 
-                                data-price="{{ $product['price'] }}">
-                                <strong>
-                                    <i class="bi bi-plus-circle"></i> Add to Cart
-                                </strong>
-                            </a>
-                        </div>
+                        {{-- Add to cart button --}}
+                        <a class="add-to-cart text-decoration-none text-dark" href="#"
+                            data-id="{{ $product['id'] }}" 
+                            data-name="{{ $product['name'] }}" 
+                            data-price="{{ $product['price'] }}">
+                            <strong>
+                                <i class="bi bi-plus-circle"></i> Add to Cart
+                            </strong>
+                        </a>
+                        {{--/ Add to cart button --}}
                     </div>
                 </div>
-                @endforeach
+                {{--/ Product card --}}
             </div>
+            @endforeach
         </div>
-
-        <div class="col-md-4">
-            <h2 class="mt-5">Shopping Cart</h2>
-            <div id="cart">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Cart items will be dynamically inserted here -->
-                    </tbody>
-                </table>
-            </div>
-
-            {{-- Discount --}}
-            <div id="cart-discount" class="mt-3 fw-bold"></div>
-
-            {{-- Cart total --}}
-            <div id="cart-total" class="mt-3 fw-bold"></div>
-        </div>
+        {{--/ Row --}}
     </div>
-    {{--/ row --}}
-</div>
+    {{--/ Product Column --}}
 
-{{-- jQuery --}}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{-- Shopping Cart Column --}}
+    <div class="col-md-4">
+        <h2 class="mt-5">Shopping Cart</h2>
+        <div id="cart">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Cart items will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Discount --}}
+        <div id="cart-discount" class="mt-3 fw-bold"></div>
+
+        {{-- Cart total --}}
+        <div id="cart-total" class="mt-3 fw-bold"></div>
+    </div>
+    {{--/ Shopping Cart Column --}}
+</div>
+{{--/ row --}}
+@endsection
+
+{{-- Page Js --}}
+@section('page_js')
 <script>
 $(document).ready(function () {
     // Function to update the cart
@@ -81,20 +93,20 @@ $(document).ready(function () {
 
     // Function to apply discount if applicable
     function applyDiscount() {
-        let total = 0;
+        let total     = 0;
         let itemCount = 0;
-        let discount = 0;
+        let discount  = 0;
 
         $(".cart-item").each(function () {
-            let price = parseFloat($(this).data("price"));
-            let quantity = parseInt($(this).data("quantity"));
-            total += price * quantity;
-            itemCount += quantity;
+            let price       = parseFloat($(this).data("price"));
+            let quantity    = parseInt($(this).data("quantity"));
+            total           += price * quantity;
+            itemCount       += quantity;
         });
 
         if (itemCount >= 3) {
             discount = total * 0.1; // 10% discount
-            total -= discount;
+            total   -= discount;
 
             $("#cart-discount").text(`Discount: $${discount.toFixed(2)}`);
         } else {
@@ -106,8 +118,8 @@ $(document).ready(function () {
 
     // Event handler for adding items to the cart
     $(".add-to-cart").click(function () {
-        let id = $(this).data("id");
-        let name = $(this).data("name");
+        let id    = $(this).data("id");
+        let name  = $(this).data("name");
         let price = $(this).data("price");
 
         $.ajax({
@@ -147,7 +159,7 @@ $(document).ready(function () {
         let searchText = $(this).val().toLowerCase();
 
         $(".card").each(function () {
-            let name = $(this).find("h5").text().toLowerCase();
+            let name = $(this).find(".product-title").text().toLowerCase();
             $(this).toggle(name.includes(searchText));
         });
     });
@@ -157,3 +169,4 @@ $(document).ready(function () {
 });
 </script>
 @endsection
+{{--/ Page Js --}}
